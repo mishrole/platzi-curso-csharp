@@ -2,10 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CoreEscuela.Entidades;
+using Etapa1.Entidades;
 
 namespace CoreEscuela
 {
-    public class EscuelaEngine
+    /*
+     * Clase sin herencia pero con instancia -> SEALED
+       Clase con herencia pero sin instancia -> ABSTRACT
+    */
+    public sealed class EscuelaEngine
     {
         public Escuela Escuela { get; set; }
 
@@ -28,7 +33,55 @@ namespace CoreEscuela
 
         private void CargarEvaluaciones()
         {
-            throw new NotImplementedException();
+            _ = new List<Evaluacion>();
+
+            foreach(var curso in Escuela.Cursos)
+            {
+                foreach(var asignatura in curso.Asignaturas)
+                {
+                    foreach(var alumno in curso.Alumnos)
+                    {
+                        var randomize = new Random(System.Environment.TickCount);
+
+                        for(int i = 0; i < 5; i++)
+                        {
+                            var evaluacion = new Evaluacion
+                            {
+                                Asignatura = asignatura,
+                                Nombre = $"{asignatura.Nombre} Ev#{i + 1}",
+                                Nota = (float)(5 * randomize.NextDouble()),
+                                Alumno = alumno
+                            };
+
+                            alumno.Evaluaciones.Add(evaluacion);
+                        }
+                    }
+                }
+            }
+        }
+
+        public List<ObjetoEscuelaBase> GetObjetosEscuela()
+        {
+            List<ObjetoEscuelaBase> listObj = new List<ObjetoEscuelaBase>
+            {
+                Escuela
+            };
+
+            /*listObj.Add(Escuela);*/
+            listObj.AddRange(Escuela.Cursos);
+            
+            foreach(var curso in Escuela.Cursos)
+            {
+                listObj.AddRange(curso.Asignaturas);
+                listObj.AddRange(curso.Alumnos);
+
+                foreach(var alumno in curso.Alumnos)
+                {
+                    listObj.AddRange(alumno.Evaluaciones);
+                }
+            }
+
+            return listObj;
         }
 
         private void CargarAsignaturas()
